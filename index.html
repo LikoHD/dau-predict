@@ -8,7 +8,7 @@
     <style>
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
-            background-color: #eeeff1;
+            background-color: #f1eeee;
             color: #FF69B4;
             max-width: 1000px;
             margin: 0 auto;
@@ -43,6 +43,7 @@
             display: flex;
             align-items: center;
             margin-bottom: 15px;
+            
         }
         .input-group label {
             flex: 0 0 150px;
@@ -54,10 +55,12 @@
             padding: 5px;
             border: 2px solid #FFB6C1;
             border-radius: 10px;
+            
         }
         .input-group .buttons {
             display: flex;
             margin-left: 10px;
+            
         }
         .input-group .buttons button {
             width: 30px;
@@ -67,7 +70,7 @@
             border-radius: 50%;
             font-size: 18px;
             cursor: pointer;
-            margin: 0 5px;
+            margin: 5px;
             color: white;
         }
         .predict-button {
@@ -110,85 +113,131 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            gap: 40px; /* 添加这一行来减少间隙 */
+            
         }
         .input-section {
-            flex: 0 0 60%;
+            flex: 0 0 calc(60% - 25px); /* 调整宽度以适应新的间隙 */
             display: flex;
             flex-direction: column;
+            
         }
         .formula-section {
-            flex: 0 0 35%;
-            padding: 20px;
+            flex: 0 0 calc(40% - 5px); /* 调整宽度以适应新的间隙 */
+            margin-left: 0px;
+        }
+        /* 修改和添加新的响应式样式 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+            .card {
+                padding: 15px;
+            }
+            .flex-container {
+                flex-direction: column;
+            }
+            .input-section, .formula-section {
+                flex: 0 0 100%;
+                width: 100%;
+            }
+            .input-group {
+                flex-wrap: nowrap;
+                align-items: center;
+            }
+            .input-group label {
+                flex: 0 0 50%;
+                margin-bottom: 0;
+            }
+            .input-group input {
+                flex: 0 0 100px;
+                width: 100px;
+            }
+            .input-group .buttons {
+                flex: 0 0 70px;
+                margin-left: 10px;
+            }
+            #combinedChart, #formulaChart {
+                height: 300px;
+            }
+            .predict-button {
+                width: 100%;
+                margin-top: 10px;
+            }
         }
     </style>
 </head>
 <body>
     
     <div class="header">
-        <h1>在线DAU预估｜DAU Predict</h1>
-        <p style="color: #8a8888; font-size: 12px;">DAU (Daily Active Users), 每日活跃的总用户数。使用简单的幂函数模型来预测用户留存情况，并据此预测未来的DAU。</p>
-        <p style="color: #8a8888; font-size: 14px;">作者 <a href="https://web.okjike.com/u/d8e3b2a1-62dd-41cd-bf8c-bcf05b07d80f" style="color: #FF69B4; text-decoration: none;">即刻@Liko</a> | <a href="https://space.bilibili.com/12089971" style="color: #FF69B4; text-decoration: none;">B站@LikoHD</a> | <a href="https://mp.weixin.qq.com/s/KcF-v-feDP2nVek2ZYW0-w" style="color: #FF69B4; text-decoration: none;">公众号@产品圆桌会</a></p>
+        <h1>在线DAU预估｜DAU Prediction</h1>
+        <p style="color: #8a8888; font-size: 14px;">Created by <a href="https://web.okjike.com/u/d8e3b2a1-62dd-41cd-bf8c-bcf05b07d80f" style="color: #FF69B4; text-decoration: none;">即刻@Liko</a> | <a href="https://space.bilibili.com/12089971" style="color: #FF69B4; text-decoration: none;">B站@LikoHD</a> | <a href="https://mp.weixin.qq.com/s/KcF-v-feDP2nVek2ZYW0-w" style="color: #FF69B4; text-decoration: none;">公众号@产品圆桌会</a></p>
     </div>
 
     <div class="card">
-        <h2>1. 输入参数</h2>
         <div class="flex-container">
             <div class="input-section">
                 <h3>新增用户与留存数据</h3>
-                <p style="color: #a49f9f; font-size: 12px;">输入每日新增用户、次日留存率、七日留存率、三十日留存率，预测未来DAU</p>
-                <div class="input-group">
-                    <label for="newUsers">每日新增用户数</label>
-                    <input type="number" id="newUsers" min="0" value="100000" style="width: 100%;">
-                    <div class="buttons">
-                        <button onclick="adjustValue('newUsers', -100)">-</button>
-                        <button onclick="adjustValue('newUsers', 100)">+</button>
+                <div style="margin-left: 30px;">
+                    <p style="color: #666; font-size: 12px; margin-bottom: 10px;">输入每日新增用户、次日留存率、七日留存率、三十日留存率，预测未来DAU</p>
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <label for="newUsers">每日新增用户数</label>
+                        <input type="number" id="newUsers" min="0" value="100000" style="width: 100%;">
+                        <div class="buttons">
+                            <button onclick="adjustValue('newUsers', -100)">-</button>
+                            <button onclick="adjustValue('newUsers', 100)">+</button>
+                        </div>
                     </div>
-                </div>
-                <div class="input-group">
-                    <label for="retention1">新用户次日留存 (%)</label>
-                    <input type="number" id="retention1" min="0" max="100" value="40" style="width: 100%;">
-                    <div class="buttons">
-                        <button onclick="adjustValue('retention1', -1)">-</button>
-                        <button onclick="adjustValue('retention1', 1)">+</button>
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <label for="retention1">新用户次日留存 (%)</label>
+                        <input type="number" id="retention1" min="0" max="100" value="40" style="width: 100%;">
+                        <div class="buttons">
+                            <button onclick="adjustValue('retention1', -1)">-</button>
+                            <button onclick="adjustValue('retention1', 1)">+</button>
+                        </div>
                     </div>
-                </div>
-                <div class="input-group">
-                    <label for="retention7">新用户7日留存 (%)</label>
-                    <input type="number" id="retention7" min="0" max="100" value="20" style="width: 100%;">
-                    <div class="buttons">
-                        <button onclick="adjustValue('retention7', -1)">-</button>
-                        <button onclick="adjustValue('retention7', 1)">+</button>
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <label for="retention7">新用户7日留存 (%)</label>
+                        <input type="number" id="retention7" min="0" max="100" value="20" style="width: 100%;">
+                        <div class="buttons">
+                            <button onclick="adjustValue('retention7', -1)">-</button>
+                            <button onclick="adjustValue('retention7', 1)">+</button>
+                        </div>
                     </div>
-                </div>
-                <div class="input-group">
-                    <label for="retention30">新用户30日留存 (%)</label>
-                    <input type="number" id="retention30" min="0" max="100" value="10" style="width: 100%;">
-                    <div class="buttons">
-                        <button onclick="adjustValue('retention30', -1)">-</button>
-                        <button onclick="adjustValue('retention30', 1)">+</button>
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <label for="retention30">新用户30日留存 (%)</label>
+                        <input type="number" id="retention30" min="0" max="100" value="10" style="width: 100%;">
+                        <div class="buttons">
+                            <button onclick="adjustValue('retention30', -1)">-</button>
+                            <button onclick="adjustValue('retention30', 1)">+</button>
+                        </div>
                     </div>
-                </div>
-                <div class="input-group">
-                    <label for="predictionDays">预测天数</label>
-                    <input type="number" id="predictionDays" min="1" value="30" style="width: 100%;">
-                    <div class="buttons">
-                        <button onclick="adjustValue('predictionDays', -1)">-</button>
-                        <button onclick="adjustValue('predictionDays', 1)">+</button>
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <label for="predictionDays">预测天数</label>
+                        <input type="number" id="predictionDays" min="1" value="30" style="width: 100%;">
+                        <div class="buttons">
+                            <button onclick="adjustValue('predictionDays', -1)">-</button>
+                            <button onclick="adjustValue('predictionDays', 1)">+</button>
+                        </div>
                     </div>
+                    <button class="predict-button" onclick="predict()">预测DAU</button>
                 </div>
-                <button class="predict-button" onclick="predict()">预测DAU</button>
+               
             </div>
             <div class="formula-section">
-                <p style="color: #666; font-size: 14px;"></h3>
+                <div id="formulaChart" style="width: 100%; height: 260px;margin-top: 10%;"></div>
+                <p style="color: #666; font-size: 14px;margin-top: -20px;">留存拟合:</p>
                 <p id="formula" style="color: #FF69B4; font-weight: bold; font-size: 18px;"></p>
-                <p style="color: #666; font-size: 14px;">拟合幂函数，R(t) 表示第 t 天的留存率</p>
-                <div id="formulaChart" style="width: 100%; height: 250px;"></div>
+                <p style="color: #666; font-size: 14px;">R(t) 表示第 t 天的留存率</p>
             </div>
         </div>
     </div>
 
     <div class="card">
-        <div id="combinedChart"></div>
+        <div id="combinedChart" style="width: 100%; height: 400px;"></div>
         <div id="table"></div>
     </div>
 
@@ -370,7 +419,7 @@
             const predictionDays = parseInt(document.getElementById('predictionDays').value);
             const data = [];
             for (let t = 1; t <= predictionDays; t++) {
-                data.push([t, a * Math.pow(t, b)]);
+                data.push([t, a * Math.pow(t, b) * 100]); // 将留存率转换为百分比
             }
 
             const option = {
@@ -383,7 +432,7 @@
                 },
                 xAxis: {
                     type: 'value',
-                    name: '天数',
+                    name: '天',
                     nameTextStyle: {
                         color: '#666'
                     },
@@ -448,18 +497,30 @@
             document.body.removeChild(downloadLink);
         }
 
+        function handleResize() {
+            if (combinedChart) {
+                combinedChart.resize();
+            }
+            if (formulaChart) {
+                formulaChart.resize();
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+
         window.onload = function() {
             initChart();
             predict();
             const {formula} = generateFormula(0.4, 0.1);
             document.getElementById('formula').textContent = formula;
 
-            // 为预测天数输入框添加事件监听，当值改变时重新预测
             document.getElementById('predictionDays').addEventListener('input', predict);
             document.getElementById('downloadExcel').addEventListener('click', function(e) {
                 e.preventDefault();
                 downloadExcel();
             });
+
+            handleResize();
         }
     </script>
 </body>
