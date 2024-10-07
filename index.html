@@ -62,7 +62,7 @@
         .input-group .buttons button {
             width: 30px;
             height: 30px;
-            background-color: #f292a1be;
+            background-color: #f3dae7;
             border: none;
             border-radius: 50%;
             font-size: 18px;
@@ -212,6 +212,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
     <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      </script>
+      <script defer src="/_vercel/insights/script.js"></script>
+    <script>
         let combinedChart;
         let formulaChart;
 
@@ -245,7 +249,7 @@
             const newUsersArray = new Array(days).fill(newUsers);
             const retainedUsersArray = new Array(days).fill(0);
 
-            // 使用days变量更新循环
+            // 使用days变量更新循环循环
             for (let i = 0; i < days; i++) {
                 let retainedUsers = 0;
                 for (let j = 0; j <= i; j++) {
