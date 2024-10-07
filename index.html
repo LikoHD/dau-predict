@@ -113,8 +113,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            gap: 40px; /* 添加这一行来减少间隙 */
-            
+            margin-top: -10px;
         }
         .input-section {
             flex: 0 0 calc(60% - 25px); /* 调整宽度以适应新的间隙 */
@@ -173,12 +172,12 @@
 <body>
     
     <div class="header">
-        <h1>在线DAU预估｜DAU Prediction</h1>
+        <h1>💡在线DAU预估｜DAU Prediction</h1>
         <p style="color: #8a8888; font-size: 14px;">Created by <a href="https://web.okjike.com/u/d8e3b2a1-62dd-41cd-bf8c-bcf05b07d80f" style="color: #FF69B4; text-decoration: none;">即刻@Liko</a> | <a href="https://space.bilibili.com/12089971" style="color: #FF69B4; text-decoration: none;">B站@LikoHD</a> | <a href="https://mp.weixin.qq.com/s/KcF-v-feDP2nVek2ZYW0-w" style="color: #FF69B4; text-decoration: none;">公众号@产品圆桌会</a></p>
     </div>
 
     <div class="card">
-        <div class="flex-container">
+        <div class="flex-container" ">
             <div class="input-section">
                 <h3>新增用户与留存数据</h3>
                 <div style="margin-left: 30px;">
@@ -223,15 +222,14 @@
                             <button onclick="adjustValue('predictionDays', 1)">+</button>
                         </div>
                     </div>
-                    <button class="predict-button" onclick="predict()">预测DAU</button>
+                    <!-- 删除预测 DAU 按钮 -->
                 </div>
                
             </div>
             <div class="formula-section">
                 <div id="formulaChart" style="width: 100%; height: 260px;margin-top: 10%;"></div>
-                <p style="color: #666; font-size: 14px;margin-top: -20px;">留存拟合:</p>
-                <p id="formula" style="color: #FF69B4; font-weight: bold; font-size: 18px;"></p>
-                <p style="color: #666; font-size: 14px;">R(t) 表示第 t 天的留存率</p>
+                <p style="color: #666; font-size: 14px;margin-top: -20px;line-height: 1.5;">留存拟合:  <span id="formula" style="color: #FF69B4; font-weight:normal; font-size: 18px;"></span></p>
+                <p style="color: #666; font-size: 14px;line-height: 1.5;">R(t) 表示第 t 天的留存率</p>
             </div>
         </div>
     </div>
@@ -242,22 +240,13 @@
     </div>
 
     <div class="related-content">
-        <h3 style="color: #D3D3D3;">相关文章</h3>
+        <h3 style="color: #D3D3D3;">References</h3>
         <ul style="color: #D3D3D3;">
             <li><a href="https://www.woshipm.com/operate/4091166.html" style="color: #d3d3d3;font-size: 12px">LTV及DAU的计算、预估方法</a></li>
             <li><a href="https://jeffshow.com/forcast-app-dau-and-dismantle-dau-goal.html" style="color: #D3D3D3;font-size: 12px">DAU预估和拆解的一种方法</a></li>
         </ul>
     </div>
 
-
-
-    <div class="external-links">
-        <h3 style="color: #D3D3D3;">友情链接</h3>
-        <ul style="color: #D3D3D3;">
-            <li><a href="https://www.woshipm.com" style="color: #D3D3D3;font-size: 12px;">人人都是产品经理</a></li>
-            <li><a href="https://www.pmcaff.com" style="color: #D3D3D3;font-size: 12px;">PMCAFF产品经理社区</a></li>
-        </ul>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
     <script>
@@ -276,7 +265,7 @@
         function adjustValue(id, delta) {
             const input = document.getElementById(id);
             input.value = Math.max(0, parseInt(input.value) + delta);
-            predict();
+            predict(); // 直接调用 predict 函数
         }
 
         function predict() {
@@ -370,7 +359,6 @@
                 yAxis: [
                     {
                         type: 'value',
-                        name: 'DAU',
                         min: 0,
                         position: 'left',
                         axisLine: {
@@ -514,7 +502,12 @@
             const {formula} = generateFormula(0.4, 0.1);
             document.getElementById('formula').textContent = formula;
 
-            document.getElementById('predictionDays').addEventListener('input', predict);
+            // 为所有输入框添加 input 事件监听器
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', predict);
+            });
+
             document.getElementById('downloadExcel').addEventListener('click', function(e) {
                 e.preventDefault();
                 downloadExcel();
