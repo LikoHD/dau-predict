@@ -1,6 +1,8 @@
 # DAU Prediction Tool
 
 这是一个在线日活跃用户(DAU)预测工具,基于留存率模型预测应用的未来 DAU 趋势,帮助产品经理制定用户增长策略。
+![Uploading image.png…]()
+
 
 ## 功能特点
 
