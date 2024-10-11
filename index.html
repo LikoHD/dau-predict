@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAU预估与分析工具 - 在线精准预测App日活用户数 | DAU Predict</title>
+    <title>DAU预估工具 - 精准预测App日活用户数 | 在线DAU分析</title>
     <meta name="description" content="DAU Predict是一款专业的日活用户(DAU)预估工具,基于留存率模型精准预测App未来DAU趋势,助力产品经理制定用户增长策略。">
     <style>
         body {
@@ -223,6 +223,7 @@
     <div class="related-content">
         <h3 style="color: #D3D3D3;">References</h3>
         <ul style="color: #D3D3D3;">
+            <li><a href="https://blogs.geniteam.com/predicting-dau/" style="color: #d3d3d3;font-size: 12px">Predicting DAU</a></li>
             <li><a href="https://www.woshipm.com/operate/4091166.html" style="color: #d3d3d3;font-size: 12px">LTV及DAU的计算、预估方法</a></li>
             <li><a href="https://jeffshow.com/forcast-app-dau-and-dismantle-dau-goal.html" style="color: #D3D3D3;font-size: 12px">DAU预估和拆解的一种方法</a></li>
         </ul>
@@ -303,13 +304,28 @@
         }
 
         function displayCombinedChart(dau, retentionRates) {
+            const newUsers = parseInt(document.getElementById('newUsers').value);
+            const predictionDays = parseInt(document.getElementById('predictionDays').value);
+            const totalNewUsers = newUsers * predictionDays;
+            const finalDAU = dau[dau.length - 1];
+
             const option = {
-                title: {
+                title: [{
                     text: 'DAU预测趋势',
                     textStyle: {
                         color: '#FF69B4'
                     }
-                },
+                }, {
+                    text: ` 总新增用户数: ${totalNewUsers.toLocaleString()}  |  最终DAU: ${finalDAU.toLocaleString()}  |  留存用户占比: ${((finalDAU / totalNewUsers) * 100).toFixed(2)}%`,
+                    top: '8%',
+                    left: 'center',
+                    textStyle: {
+                        fontSize: 14,
+                        fontWeight: 'normal',
+                        color: '#666'
+                    },
+                    padding: [0, 0, 5, 0]  // 添加这一行
+                }],
                 tooltip: {
                     trigger: 'axis',
                     axisPointer: {
@@ -319,7 +335,7 @@
                 legend: {
                     data: ['DAU'],
                     textStyle: {
-                        color: '#FF69B4'
+                        color: '#FF69B4' 
                     }
                 },
                 xAxis: {
@@ -345,7 +361,7 @@
                 ],
                 series: [
                     {
-                        name: 'DAU',
+                        
                         type: 'bar',
                         data: dau,
                         itemStyle: {
@@ -363,16 +379,35 @@
 
         function displayTable(dau, newUsersArray, retainedUsersArray, retentionRates) {
             const table = document.getElementById('table');
-            let html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><h3 style="margin: 0;">DAU明细数据</h3><a href="#" id="downloadExcel" style="color: #FF69B4; text-decoration: none;">下载Excel</a></div><table><tr><th>天数</th><th>DAU</th><th>每日新增用户数</th><th>历史留存用户数</th><th>留存率 (%)</th></tr>';
-            dau.forEach((value, index) => {
+            const predictionDays = parseInt(document.getElementById('predictionDays').value);
+            const displayDays = [1, 7, 14, 21, 30];
+            
+            let html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><h3 style="margin: 0 ;">DAU明细数据</h3><a href="#" id="downloadExcel" style="color: #FF69B4; text-decoration: none;">👉下载Excel查看明细</a></div><table><tr><th>天数</th><th>DAU</th><th>每日新增用户数</th><th>历史留存用户数</th><th>留存率 (%)</th></tr>';
+
+            displayDays.forEach(day => {
+                if (day <= predictionDays) {
+                    const index = day - 1;
+                    html += `<tr style="color: #666; font-size: 14px;">
+                        <td>${day}</td>
+                        <td>${dau[index].toLocaleString()}</td>
+                        <td>${newUsersArray[index].toLocaleString()}</td>
+                        <td>${retainedUsersArray[index].toLocaleString()}</td>
+                        <td>${retentionRates[index].toFixed(2)}%</td>
+                    </tr>`;
+                }
+            });
+
+            if (predictionDays > displayDays[displayDays.length - 1]) {
+                const index = predictionDays - 1;
                 html += `<tr style="color: #666; font-size: 14px;">
-                    <td>${index + 1}</td>
-                    <td>${value.toLocaleString()}</td>
+                    <td>${predictionDays}</td>
+                    <td>${dau[index].toLocaleString()}</td>
                     <td>${newUsersArray[index].toLocaleString()}</td>
                     <td>${retainedUsersArray[index].toLocaleString()}</td>
                     <td>${retentionRates[index].toFixed(2)}%</td>
                 </tr>`;
-            });
+            }
+
             html += '</table>';
             table.innerHTML = html;
         }
@@ -439,19 +474,45 @@
         }
 
         function downloadExcel() {
-            const table = document.querySelector('table');
-            const rows = table.querySelectorAll('tr');
-            let csv = [];
-            for (let i = 0; i < rows.length; i++) {
-                let row = [], cols = rows[i].querySelectorAll('td, th');
-                for (let j = 0; j < cols.length; j++) {
-                    let data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ');
-                    data = data.replace(/"/g, '""');
-                    row.push('"' + data + '"');
+            const newUsers = parseInt(document.getElementById('newUsers').value);
+            const predictionDays = parseInt(document.getElementById('predictionDays').value);
+            const newUsersArray = new Array(predictionDays).fill(newUsers);
+            const retainedUsersArray = new Array(predictionDays).fill(0);
+            const dau = [];
+            const retentionRates = [100];
+
+            for (let i = 0; i < predictionDays; i++) {
+                let retainedUsers = 0;
+                for (let j = 0; j <= i; j++) {
+                    const daysSinceAcquisition = i - j;
+                    let retentionRate;
+                    if (daysSinceAcquisition === 0) {
+                        retentionRate = 1;
+                    } else if (daysSinceAcquisition === 1) {
+                        retentionRate = parseFloat(document.getElementById('retention1').value) / 100;
+                    } else {
+                        const {a, b} = generateFormula(parseFloat(document.getElementById('retention1').value) / 100, parseFloat(document.getElementById('retention30').value) / 100);
+                        retentionRate = a * Math.pow(daysSinceAcquisition, b);
+                    }
+                    retainedUsers += newUsers * retentionRate;
                 }
-                csv.push(row.join(','));
+                retainedUsers = Math.round(retainedUsers);
+                retainedUsersArray[i] = retainedUsers;
+                dau.push(newUsers + retainedUsers);
+
+                if (i > 0) {
+                    const {a, b} = generateFormula(parseFloat(document.getElementById('retention1').value) / 100, parseFloat(document.getElementById('retention30').value) / 100);
+                    const dailyRetentionRate = a * Math.pow(i, b);
+                    retentionRates.push(dailyRetentionRate * 100);
+                }
             }
-            let csvFile = new Blob([csv.join('\n')], {type: 'text/csv;charset=utf-8;'});
+
+            let csv = '\uFEFF天数,DAU,每日新增用户数,历史留存用户数,留存率 (%)\n';
+            for (let i = 0; i < predictionDays; i++) {
+                csv += `${i + 1},${dau[i]},${newUsersArray[i]},${retainedUsersArray[i]},${retentionRates[i].toFixed(2)}%\n`;
+            }
+
+            let csvFile = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
             let downloadLink = document.createElement('a');
             downloadLink.href = URL.createObjectURL(csvFile);
             downloadLink.setAttribute('download', 'DAU预测明细数据.csv');
