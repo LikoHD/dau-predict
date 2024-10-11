@@ -380,7 +380,7 @@
         function displayTable(dau, newUsersArray, retainedUsersArray, retentionRates) {
             const table = document.getElementById('table');
             const predictionDays = parseInt(document.getElementById('predictionDays').value);
-            const displayDays = [1, 7, 14, 21, 30];
+            const displayDays = [1, 2,3,7, 14, 21, 30];
             
             let html = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;"><h3 style="margin: 0 ;">DAU明细数据</h3><a href="#" id="downloadExcel" style="color: #FF69B4; text-decoration: none;">👉下载Excel查看明细</a></div><table><tr><th>天数</th><th>DAU</th><th>每日新增用户数</th><th>历史留存用户数</th><th>留存率 (%)</th></tr>';
 
